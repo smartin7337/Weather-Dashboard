@@ -6,13 +6,28 @@
     <title>Weather Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat|Varela+Round&display=swap" rel="stylesheet">
+    <link href="https://fonts.google.com/specimen/Oswald" rel="stylesheet">
 </head>
 <body>
     
-    <!-- Weather Dashboard Header -->
+    <!-- weather dashboard heading  -->
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1 class="display-5 text-center">Weather Dashboard</h1>
         </div>
     </div>
+    <!-- main content -->
+    <div class="container-fluid">
+        <!-- main row -->
+        <div class="row">
+            <!-- search bar for cities -->
+            <div class="col-3 searchCol">
+                <!-- button search form -->
+                <h4>Find a city:</h4>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="cityInput" placeholder="City Name" aria-label="User's username" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button" id="citySearchBtn">
+                            <img src="Assets/searchicon.png" width="20px"/></button>
+                        </div>
+                    </div>
