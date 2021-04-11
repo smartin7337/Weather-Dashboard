@@ -123,3 +123,39 @@ async function displayWeather() {
             url: OPW,
             method: "GET"
         })
+
+        // getting uv info and setting colors relative to value
+        var getUVIndex = uvResponse.value;
+        var uvNumber = $("<span>");
+        if (getUVIndex > 0 && getUVIndex <= 2.99){
+            uvNumber.addClass("low");
+        }else if(getUVIndex >= 3 && getUVIndex <= 5.99){
+            uvNumber.addClass("moderate");
+        }else if(getUVIndex >= 6 && getUVIndex <= 7.99){
+            uvNumber.addClass("high");
+        }else if(getUVIndex >= 8 && getUVIndex <= 10.99){
+            uvNumber.addClass("vhigh");
+        }else{
+            uvNumber.addClass("extreme");
+        } 
+        uvNumber.text(getUVIndex);
+        var uvIndexEl = $("<p class='card-text'>").text("UV Index: ");
+        uvNumber.appendTo(uvIndexEl);
+        currentWeatherDiv.append(uvIndexEl);
+        $("#weatherContainer").html(currentWeatherDiv);
+}
+
+// runs the ajax call for the forecast and displays them to DOM
+async function displayFiveDayForecast() {
+
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=d3b85d453bf90d469c82e650a0a3da26";
+
+    var response = await $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+      var forecastDiv = $("<div  id='fiveDayForecast'>");
+      var forecastHeader = $("<h5 class='card-header border-secondary'>").text("5 Day Forecast");
+      forecastDiv.append(forecastHeader);
+      var cardDeck = $("<div  class='card-deck'>");
+      forecastDiv.append(cardDeck);
