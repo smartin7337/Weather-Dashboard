@@ -1,9 +1,9 @@
   
 // local storage functions
-initCityList();
+initListCity();
 initWeather();
 
-// global variable declarations
+// global variables
 var listCity = [];
 var cityName;
 
@@ -13,7 +13,7 @@ function renderCities(){
     $("#listCity").empty();
     $("#inputCity").val("");
     
-    for (i=0; i<cityList.length; i++){
+    for (i=0; i<listCity.length; i++){
         var a = $("<a>");
         a.addClass("list-group-item list-group-item-action list-group-item-primary city");
         a.attr("data-name", listCity[i]);
@@ -34,7 +34,7 @@ function initWeather() {
 }
 
 // grabs the city list array from local storage
-function initCityList() {
+function initListCity() {
     var storedCities = JSON.parse(localStorage.getItem("cities"));
     
     if (storedCities !== null) {
@@ -45,7 +45,7 @@ function initCityList() {
     }
 
 
-// saves the "currently" city display to local storage
+// saves the current city to local storage
 function storeCurrentCity() {
 
     localStorage.setItem("currentCity", JSON.stringify(cityName));
@@ -84,10 +84,10 @@ $("#cityInput").keypress(function(e){
     }
 })
 
-// runs the Open Weather API call for current weather/city and forecast to the DOM
+// runs the OWA call for current weather/city/forecast to the DOM
 async function displayWeather() {
 
-    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=d3b85d453bf90d469c82e650a0a3da26";
+    var queryURL ="https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
 
     var response = await $.ajax({
         url: queryURL,
@@ -118,7 +118,7 @@ async function displayWeather() {
         var getLong = response.coord.lon;
         var getLat = response.coord.lat;
         
-        var OPW = "https://api.openweathermap.org/data/2.5/uvi?appid=d3b85d453bf90d469c82e650a0a3da26&lat="+getLat+"&lon="+getLong;
+        var OPW = "https://api.openweathermap.org/data/2.5/uvi?appid=b11cce79379fda35f3b0785fbc1df214="+getLat+"&lon="+getLong;
         var uvResponse = await $.ajax({
             url: OPW,
             method: "GET"
@@ -148,7 +148,7 @@ async function displayWeather() {
 // runs the ajax call for the forecast and displays them to DOM
 async function displayFiveDayForecast() {
 
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=d3b85d453bf90d469c82e650a0a3da26";
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
 
     var response = await $.ajax({
         url: queryURL,
@@ -159,3 +159,38 @@ async function displayFiveDayForecast() {
       forecastDiv.append(forecastHeader);
       var cardDeck = $("<div  class='card-deck'>");
       forecastDiv.append(cardDeck);
+      console.log(response);
+      for (i=0; i<5;i++){
+          var forecastCard = $("<div class='card mb-3 mt-3'>");
+          var cardBody = $("<div class='card-body'>");
+          var date = new Date();
+          var val=(date.getMonth()+1)+"/"+(date.getDate()+i+1)+"/"+date.getFullYear();
+          var forecastDate = $("<h5 class='card-title'>").text(val);
+          
+        cardBody.append(forecastDate);
+        var getCurrentWeatherIcon = response.list[i].weather[0].icon;
+        console.log(getCurrentWeatherIcon);
+        var displayWeatherIcon = $("<img src = http://openweathermap.org/img/wn/" + getCurrentWeatherIcon + ".png />");
+        cardBody.append(displayWeatherIcon);
+        var getTemp = response.list[i].main.temp;
+        var tempEl = $("<p class='card-text'>").text("Temp: "+getTemp+"° F");
+        cardBody.append(tempEl);
+        var getHumidity = response.list[i].main.humidity;
+        var humidityEl = $("<p class='card-text'>").text("Humidity: "+getHumidity+"%");
+        cardBody.append(humidityEl);
+        forecastCard.append(cardBody);
+        cardDeck.append(forecastCard);
+      }
+      $("#forecastContainer").html(forecastDiv);
+    }
+
+// communicates the city in the history list to displayWeather
+function historyDisplayWeather(){
+    cityName = $(this).attr("data-name");
+    displayWeather();
+    displayFiveDayForecast();
+    console.log(cityName);
+    
+}
+
+$(document).on("click", ".city", historyDisplayWeather);
