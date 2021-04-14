@@ -6,13 +6,34 @@ initWeather();
 // global variables
 var listCity = [];
 var cityName;
+console.log(cityName);
+
+// on click event handler for city search button
+$("#citySearchBtn").on("click", function(event){
+    event.preventDefault();
+
+    var cityNameRaw = $("#inputCity").val().trim();
+    cityName = encodeURIComponent(cityNameRaw);
+    
+    if(cityName === ""){
+        alert("Search a city")
+
+    }else{
+    listCity.push(cityName);
+    }
+    storeCurrentCity();
+    storeCityArray();
+    renderCities();
+    displayWeather();
+    displayFiveDayForecast();
+});
 
 
 // displays the city entered into the DOM
 function renderCities(){
     $("#listCity").empty();
     $("#inputCity").val("");
-    
+
     for (i=0; i<listCity.length; i++){
         var a = $("<a>");
         a.addClass("list-group-item list-group-item-action list-group-item-primary city");
@@ -47,35 +68,12 @@ function initListCity() {
 
 // saves the current city to local storage
 function storeCurrentCity() {
-
     localStorage.setItem("currentCity", JSON.stringify(cityName));
 }
 //  saves the city array to local storage
 function storeCityArray() {
     localStorage.setItem("cities", JSON.stringify(listCity));
     }
-
-// on click event handler for city search button
-$("#citySearchBtn").on("click", function(event){
-    event.preventDefault();
-
-    cityName = $("#cityInput").val().trim();
-    if(cityName === ""){
-        alert("Search a city")
-
-    }else if (listCity.length >= 5){  
-        listCity.shift();
-        listCity.push(cityName);
-
-    }else{
-    listCity.push(cityName);
-    }
-    storeCurrentCity();
-    storeCityArray();
-    renderCities();
-    displayWeather();
-    displayFiveDayForecast();
-});
 
 // event handler for when the user hits enter for the city search
 $("#cityInput").keypress(function(e){
@@ -86,8 +84,7 @@ $("#cityInput").keypress(function(e){
 
 // runs the OWA call for current weather/city/forecast to the DOM
 async function displayWeather() {
-
-    var queryURL ="https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
+    var queryURL ="https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
 
     var response = await $.ajax({
         url: queryURL,
@@ -118,12 +115,12 @@ async function displayWeather() {
         var getLong = response.coord.lon;
         var getLat = response.coord.lat;
         
-        var OPW = "https://api.openweathermap.org/data/2.5/uvi?appid=b11cce79379fda35f3b0785fbc1df214="+getLat+"&lon="+getLong;
+        var OPW = `https://api.openweathermap.org/data/2.5/onecall?lat=${getLat}&lon=${getLong}&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214`
         var uvResponse = await $.ajax({
             url: OPW,
             method: "GET"
         })
-
+        
         // getting uv info and setting colors relative to value
         var getUVIndex = uvResponse.value;
         var uvNumber = $("<span>");
@@ -147,8 +144,7 @@ async function displayWeather() {
 
 // runs the ajax call for the forecast and displays them to DOM
 async function displayFiveDayForecast() {
-
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityName+"&units=imperial&appid=b11cce79379fda35f3b0785fbc1df214";
 
     var response = await $.ajax({
         url: queryURL,
